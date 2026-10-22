@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <regex>
+#include <queue>
 
 #include "utils.hpp"
 
@@ -35,15 +36,19 @@ struct GraphNode {
 
 class Graph {
     private:
-        bool isOriented;
-        int nodeCount;
-
-        vector<GraphNode*> nodes;
-
-        void makeLinks(vector<Edge> edges);
-
+    
+    
+    
+    void makeLinks(vector<Edge> edges);
+    
     public:
+        vector<GraphNode*> nodes;
+        vector<Edge> edges; 
+        int nodeCount;
+        bool isOriented;
         Graph(bool isOriented, int nodeCount, vector<Edge> edges);
+
+        vector<int> bfs(int origin);
 };
 
 Graph* readGraph(string filename);

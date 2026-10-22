@@ -18,8 +18,3 @@ bool isPosInteger(string s){
     return true;
 }
 
-void writeLog(string msg){
-    ifstream logfile = getFile(LOGFILE_NAME);
-
-
-}

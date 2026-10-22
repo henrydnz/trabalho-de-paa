@@ -50,6 +50,6 @@ public:
     }
 };
 
-inline Logs_Util& Logs_Util = Logs_Util::getInstance();
+inline Logs_Util& logs_util = Logs_Util::getInstance();
 
 #endif
