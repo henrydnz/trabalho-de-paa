@@ -27,18 +27,20 @@ class Graph {
     int nodeCount;
     bool isOriented;
 
-    void bfs_component(int node, vector<bool>& visited, vector<int>& traverse);
-    void dfs_component(int node, vector<bool>& visited, vector<int>& traverse);
-
+    
     public:
-
+    
     Graph(bool isOriented, int nodeCount, EdgeTable edges) 
-        : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
-
+    : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
+    
     void showLog();
+    
+    //distribute function method on all graph components
+    vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&));
 
-    vector<int> bfs(int origin);
-    vector<int> dfs(int origin);
+    //functions work only on component
+    void bfs(int node, vector<bool>& visited, vector<int>& traverse);
+    void dfs(int node, vector<bool>& visited, vector<int>& traverse);
 };
 
 Graph* readGraph(string filename);

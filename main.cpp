@@ -7,7 +7,8 @@ int main(){
     Graph* g = readGraph("test.txt");
 
     g->showLog();
-    g->bfs(0);
-    g->dfs(0);
+    
+    g->search(0, &Graph::bfs);
+    g->search(0, &Graph::dfs);
 
 }

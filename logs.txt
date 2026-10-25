@@ -14,9 +14,7 @@ Num Vertices: 5
 
 =================================
 
-[INFO] executou bfs:
 [INFO] 0 1 2 3 4 
 
-[INFO] executou dfs:
 [INFO] 0 1 3 2 4 
 

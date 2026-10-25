@@ -62,7 +62,8 @@ void Graph::showLog(){
     logsUtil.log("\n=================================\n", 3);
 }
 
-void Graph::bfs_component(int node, vector<bool>& visited, vector<int>& traverse){
+//works only on component
+void Graph::bfs(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
 
     queue<int> q;
@@ -82,53 +83,34 @@ void Graph::bfs_component(int node, vector<bool>& visited, vector<int>& traverse
     }
 }
 
-vector<int> Graph::bfs(int origin){
-    logsUtil.log("executou bfs:");
-
-    vector<int> traverse;
-    vector<bool> visited (nodeCount, false);
-
-    bfs_component(origin, visited, traverse);
-
-    for(int i=0;i<nodeCount;i++) 
-        if(!visited[i])
-            bfs_component(i, visited, traverse);
-
-    stringstream ss;
-    for(int n:traverse) ss << n << " ";
-    logsUtil.log(ss.str()+'\n');
-
-    return traverse;
-}
-
-void Graph::dfs_component(int node, vector<bool>& visited, vector<int>& traverse){
+//works only on component
+void Graph::dfs(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
     traverse.push_back(node);
 
     for(Edge e : edges[node]){
         int v = e.dest;
         if(!visited[v]) 
-            dfs_component(v, visited, traverse);
+            dfs(v, visited, traverse);
     }
 }
 
-vector<int> Graph::dfs(int origin){
-    logsUtil.log("executou dfs:");
-
+vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&)){
     vector<int> traverse;
     vector<bool> visited (nodeCount, false);
 
-    dfs_component(origin, visited, traverse);
+    (this->*method)(origin, visited, traverse);
 
     for(int i=0;i<nodeCount;i++)
         if(!visited[i])
-            dfs_component(i, visited, traverse);
+            (this->*method)(i, visited, traverse);
 
     stringstream ss;
     for(int n:traverse) ss << n << " ";
     logsUtil.log(ss.str()+'\n');
 
     return traverse;
-}
+};
+
 // =================================================
 
