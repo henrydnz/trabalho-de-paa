@@ -14,7 +14,15 @@ Num Vertices: 5
 
 =================================
 
+[INFO] aplicou em todos os componentes: bfs
+[INFO] resultado: bfs
 [INFO] 0 1 2 3 4 
 
+[INFO] aplicou em todos os componentes: dfs
+[INFO] resultado: dfs
+[INFO] 0 1 3 2 4 
+
+[INFO] aplicou em todos os componentes: ordenacao topologica
+[INFO] resultado: ordenacao topologica
 [INFO] 0 1 3 2 4 
 

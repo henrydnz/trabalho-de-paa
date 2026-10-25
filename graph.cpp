@@ -86,6 +86,7 @@ void Graph::bfs(int node, vector<bool>& visited, vector<int>& traverse){
 //works only on component
 void Graph::dfs(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
+    
     traverse.push_back(node);
 
     for(Edge e : edges[node]){
@@ -95,15 +96,33 @@ void Graph::dfs(int node, vector<bool>& visited, vector<int>& traverse){
     }
 }
 
-vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&)){
+void Graph::topologicDfs(int node, vector<bool>& visited, vector<int>& traverse){
+    visited[node] = true;
+
+    for(Edge e : edges[node]){
+        int v = e.dest;
+        if(!visited[v]) 
+            topologicDfs(v, visited, traverse);
+    }
+
+    traverse.push_back(node);
+}
+
+vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), string name, bool reverseAns){
+    
     vector<int> traverse;
     vector<bool> visited (nodeCount, false);
-
+    
     (this->*method)(origin, visited, traverse);
-
+    
     for(int i=0;i<nodeCount;i++)
-        if(!visited[i])
-            (this->*method)(i, visited, traverse);
+    if(!visited[i])
+    (this->*method)(i, visited, traverse);
+    
+    if(reverseAns) reverse(traverse.begin(), traverse.end());
+
+    logsUtil.log("aplicou em todos os componentes: " + name);
+    logsUtil.log("resultado:");
 
     stringstream ss;
     for(int n:traverse) ss << n << " ";

@@ -36,11 +36,12 @@ class Graph {
     void showLog();
     
     //distribute function method on all graph components
-    vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&));
+    vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), string name, bool reverseAns = false);
 
     //functions work only on component
     void bfs(int node, vector<bool>& visited, vector<int>& traverse);
     void dfs(int node, vector<bool>& visited, vector<int>& traverse);
+    void topologicDfs(int node, vector<bool>& visited, vector<int>& traverse);
 };
 
 Graph* readGraph(string filename);
