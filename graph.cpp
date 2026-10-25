@@ -62,8 +62,28 @@ void Graph::showLog(){
     logsUtil.log("\n=================================\n", 3);
 }
 
-//works only on component
-void Graph::bfs(int node, vector<bool>& visited, vector<int>& traverse){
+vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns){
+    vector<int> traverse;
+    vector<bool> visited (nodeCount, false);
+    
+    (this->*method)(origin, visited, traverse);
+    
+    for(int i=0;i<nodeCount;i++)
+        if(!visited[i])
+            (this->*method)(i, visited, traverse);
+    
+    if(reverseAns) reverse(traverse.begin(), traverse.end());
+
+    logsUtil.log("resultado:");
+
+    stringstream ss;
+    for(int n:traverse) ss << n << " ";
+    logsUtil.log(ss.str()+'\n');
+
+    return traverse;
+};
+
+void Graph::bfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
 
     queue<int> q;
@@ -83,8 +103,7 @@ void Graph::bfs(int node, vector<bool>& visited, vector<int>& traverse){
     }
 }
 
-//works only on component
-void Graph::dfs(int node, vector<bool>& visited, vector<int>& traverse){
+void Graph::dfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
     
     traverse.push_back(node);
@@ -92,44 +111,82 @@ void Graph::dfs(int node, vector<bool>& visited, vector<int>& traverse){
     for(Edge e : edges[node]){
         int v = e.dest;
         if(!visited[v]) 
-            dfs(v, visited, traverse);
+            dfsComponent(v, visited, traverse);
     }
 }
 
-void Graph::topologicDfs(int node, vector<bool>& visited, vector<int>& traverse){
+void Graph::topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
 
     for(Edge e : edges[node]){
         int v = e.dest;
         if(!visited[v]) 
-            topologicDfs(v, visited, traverse);
+            topologicDfsComponent(v, visited, traverse);
     }
 
     traverse.push_back(node);
 }
 
-vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), string name, bool reverseAns){
-    
-    vector<int> traverse;
-    vector<bool> visited (nodeCount, false);
-    
-    (this->*method)(origin, visited, traverse);
-    
-    for(int i=0;i<nodeCount;i++)
-    if(!visited[i])
-    (this->*method)(i, visited, traverse);
-    
-    if(reverseAns) reverse(traverse.begin(), traverse.end());
+vector<int> Graph::bfs(int origin){
+    logsUtil.log("aplicando busca bfs");
+    return search(origin, &Graph::bfsComponent, false);
+}
+vector<int> Graph::dfs(int origin){
+    logsUtil.log("aplicando busca dfs");
+    return search(origin, &Graph::dfsComponent, false);
+}
+vector<int> Graph::topologicOrder(int origin){
+    logsUtil.log("aplicando ordenacao topologica");
+    return search(origin, &Graph::topologicDfsComponent, true);
+}
 
-    logsUtil.log("aplicou em todos os componentes: " + name);
-    logsUtil.log("resultado:");
+static bool hasNegativeWeights(int nodeCount, vector<vector<Edge>> edges){
+    for(int i=0;i<nodeCount;i++) 
+        for(Edge e : edges[i])
+            if(e.weight < 0) return true;
+    return false;
+}
 
-    stringstream ss;
-    for(int n:traverse) ss << n << " ";
-    logsUtil.log(ss.str()+'\n');
+vector<int> Graph::dijkstra(int origin){
+    logsUtil.log("aplicando dijkstra");
+    if(hasNegativeWeights(nodeCount, edges)){
+        string err = "Nao pode aplicar dijkstra em grafo com pesos negativos.";
+        cerr << err << endl;
+        logsUtil.log(err, 1);
+        return {};
+    }
 
-    return traverse;
-};
+    vector<int> dist (nodeCount, INFTY);
+
+    dist[origin] = 0;
+
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+    pq.push({0,origin});
+
+    while(!pq.empty()){
+        pair<int,int> p = pq.top(); pq.pop();
+
+        int d = p.first;
+        int u = p.second;
+
+        if(d>dist[u]) continue;
+
+        for(Edge e:edges[u]){
+            int v = e.dest;
+            int w = e.weight;
+
+            int newDist = dist[u]+w;
+
+            if(newDist<dist[v]){
+                dist[v] = newDist;
+                pq.push({newDist,v});
+            }
+        }
+    }
+
+    return dist;
+}
 
 // =================================================
 

@@ -14,15 +14,16 @@ Num Vertices: 5
 
 =================================
 
-[INFO] aplicou em todos os componentes: bfs
-[INFO] resultado: bfs
+[INFO] aplicando busca bfs
+[INFO] resultado:
 [INFO] 0 1 2 3 4 
 
-[INFO] aplicou em todos os componentes: dfs
-[INFO] resultado: dfs
+[INFO] aplicando busca dfs
+[INFO] resultado:
 [INFO] 0 1 3 2 4 
 
-[INFO] aplicou em todos os componentes: ordenacao topologica
-[INFO] resultado: ordenacao topologica
+[INFO] aplicando ordenacao topologica
+[INFO] resultado:
 [INFO] 0 1 3 2 4 
 
+[ERRO] Nao pode aplicar dijkstra em grafo com pesos negativos.

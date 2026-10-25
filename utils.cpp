@@ -21,7 +21,7 @@ void LogsUtil::log(const string& mensagem, int flag) {
         default: tipo = "[DESCONHECIDO] "; break;
     }
 
-    ofstream logs(LOGFILE_NAME, ios::app);
+    ofstream logs(LOGFILE_PATH, ios::app);
 
     if(!logs.is_open()){
         cerr << "Erro na criacao do arquivo de logs." << endl;
@@ -31,7 +31,7 @@ void LogsUtil::log(const string& mensagem, int flag) {
     logs << tipo << mensagem << '\n';
 }
 
-void LogsUtil::resetLog(){ofstream logs(LOGFILE_NAME, ios::trunc);}
+void LogsUtil::resetLog(){ofstream logs(LOGFILE_PATH, ios::trunc);}
 
 void wrongInputFileFormat(int lineNum, string expected, string got){
     logsUtil.log("Formatacao do arquivo errada na linha "

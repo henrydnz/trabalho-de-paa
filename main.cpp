@@ -8,7 +8,8 @@ int main(){
 
     g->showLog();
 
-    g->search(0, &Graph::bfs, "bfs");
-    g->search(0, &Graph::dfs, "dfs");
-    g->search(0, &Graph::topologicDfs, "ordenacao topologica", 1);
+    g->bfs(0);
+    g->dfs(0);
+    g->topologicOrder(0);
+    g->dijkstra(0);
 }

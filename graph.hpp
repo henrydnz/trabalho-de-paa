@@ -27,7 +27,16 @@ class Graph {
     int nodeCount;
     bool isOriented;
 
+    // distribute method function on all graph componentsk
+    // method function structure: 
+    //      void Graph::method(int node, vector<bool>& visited, vector<int>& traverse);
+    vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns);
     
+    // search functions (only on components)
+    void bfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
+    void dfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
+    void topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
+
     public:
     
     Graph(bool isOriented, int nodeCount, EdgeTable edges) 
@@ -35,13 +44,10 @@ class Graph {
     
     void showLog();
     
-    //distribute function method on all graph components
-    vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), string name, bool reverseAns = false);
-
-    //functions work only on component
-    void bfs(int node, vector<bool>& visited, vector<int>& traverse);
-    void dfs(int node, vector<bool>& visited, vector<int>& traverse);
-    void topologicDfs(int node, vector<bool>& visited, vector<int>& traverse);
+    vector<int> bfs(int origin);
+    vector<int> dfs(int origin);
+    vector<int> topologicOrder(int origin);
+    vector<int> dijkstra(int origin);
 };
 
 Graph* readGraph(string filename);

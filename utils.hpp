@@ -11,8 +11,9 @@
 #define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
-#define LOGFILE_NAME "logs.txt"
+#define LOGFILE_PATH "logs.txt"
 
+#define INFTY (unsigned)!((int)0)
 
 
 using namespace std;
