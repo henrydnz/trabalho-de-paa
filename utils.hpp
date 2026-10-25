@@ -8,48 +8,36 @@
 #include <algorithm>
 #include <cctype>
 
+#define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
+#define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
+#define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 #define LOGFILE_NAME "logs.txt"
+
+
 
 using namespace std;
 
-ifstream getFile(string filename);
 bool isPosInteger(string s);
 
-class Logs_Util {
+class LogsUtil {
 private:
-    Logs_Util() = default;
+    LogsUtil() = default;
 
 public:
-    Logs_Util(const Logs_Util&) = delete;
-    Logs_Util& operator=(const Logs_Util&) = delete;
+    LogsUtil(const LogsUtil&) = delete;
+    LogsUtil& operator=(const LogsUtil&) = delete;
 
-    static Logs_Util& getInstance() {
-        static Logs_Util instance;
+    static LogsUtil& getInstance() {
+        static LogsUtil instance;
         return instance;
     }
 
-    void log(const std::string& mensagem) {
-        log(mensagem, 0);
-    }
-
-    void log(const std::string& mensagem, int flag) {
-        std::string tipo;
-
-        switch (flag) {
-            case 0: tipo = "INFO"; break;
-            case 1: tipo = "ERRO"; break;
-            case 2: tipo = "AVISO"; break;
-            default: tipo = "DESCONHECIDO"; break;
-        }
-
-        std::ofstream arquivo("logs.txt", std::ios::app);
-
-        if (arquivo.is_open()) {
-            arquivo << "[" << tipo << "] " << mensagem << '\n';
-        }
-    }
+    void log(const string& mensagem, int flag = 0);
+    void resetLog();
 };
 
-inline Logs_Util& logs_util = Logs_Util::getInstance();
+inline LogsUtil& logsUtil = LogsUtil::getInstance();
+
+void wrongInputFileFormat(int lineNum, string expected, string got);
 
 #endif

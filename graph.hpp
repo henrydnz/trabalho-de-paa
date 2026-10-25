@@ -7,48 +7,38 @@
 #include <fstream>
 #include <regex>
 #include <queue>
+#include <sstream>
 
 #include "utils.hpp"
 
 using namespace std;
 
 struct Edge {
-    int origin;
-    int dest;
-    int weight;
-
-    Edge(int o, int d, int w) : origin(o), dest(d), weight(w) {}
+    int dest, weight;
+    Edge(int d, int w):dest(d),weight(w){};
 };
 
-struct Link {
-    int dest;
-    int weight;
-
-    Link(int w, int d) : weight(w), dest(d) {};
-};
-
-struct GraphNode {
-    int n;
-    vector<Link> links;
-
-    GraphNode(int n) : n(n) {};
-};
+typedef vector<vector<Edge>> EdgeTable;
 
 class Graph {
     private:
-    
-    
-    
-    void makeLinks(vector<Edge> edges);
-    
-    public:
-        vector<GraphNode*> nodes;
-        vector<Edge> edges; 
-        int nodeCount;
-        bool isOriented;
-        Graph(bool isOriented, int nodeCount, vector<Edge> edges);
 
-        vector<int> bfs(int origin);
+    vector<vector<Edge>> edges;
+    int nodeCount;
+    bool isOriented;
+
+    void bfs_component(int node, vector<bool>& visited, vector<int>& traverse);
+    void dfs_component(int node, vector<bool>& visited, vector<int>& traverse);
+
+    public:
+
+    Graph(bool isOriented, int nodeCount, EdgeTable edges) 
+        : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
+
+    void showLog();
+
+    vector<int> bfs(int origin);
+    vector<int> dfs(int origin);
 };
 
 Graph* readGraph(string filename);

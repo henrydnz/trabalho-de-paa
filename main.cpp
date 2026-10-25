@@ -2,15 +2,12 @@
 #include "graph.hpp"
 
 int main(){
+    logsUtil.resetLog();
+
     Graph* g = readGraph("test.txt");
 
-    logs_util.log("informacoes do grafo lido:");
-    logs_util.log("orientado = "+(g->isOriented)?"sim":"nao");
-    logs_util.log("v = "+to_string(g->nodeCount));
-    logs_util.log("ligacoes:");
+    g->showLog();
+    g->bfs(0);
+    g->dfs(0);
 
-    for(GraphNode* node : g->nodes)
-        for(Link l : node->links) 
-            logs_util.log(to_string(node->n) + " -> " + to_string(l.dest) + " (w=" + to_string(l.weight) + ")");
-    
 }

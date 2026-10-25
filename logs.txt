@@ -1,22 +1,22 @@
-[INFO] informacoes do grafo lido:
-[INFO] sim
-[INFO] V=5
-[INFO] ligacoes:
-[INFO] 0 -> 1 (w=11)
-[INFO] 0 -> 2 (w=-4)
-[INFO] 1 -> 3 (w=-5)
-[INFO] 2 -> 4 (w=7)
-[INFO] 3 -> 0 (w=2)
-[INFO] 3 -> 2 (w=8)
-[INFO] 4 -> 2 (w=19)
-[INFO] informacoes do grafo lido:
-[INFO] sim
-[INFO] v = 5
-[INFO] ligacoes:
-[INFO] 0 -> 1 (w=11)
-[INFO] 0 -> 2 (w=-4)
-[INFO] 1 -> 3 (w=-5)
-[INFO] 2 -> 4 (w=7)
-[INFO] 3 -> 0 (w=2)
-[INFO] 3 -> 2 (w=8)
-[INFO] 4 -> 2 (w=19)
+[INFO] Arquivo test.txt lido com sucesso.
+
+===== Informacoes do Grafo =====
+
+Orientado: 1
+Num Vertices: 5
+0 -- 1 | w = 11
+0 -- 2 | w = -4
+1 -- 3 | w = -5
+2 -- 4 | w = 7
+3 -- 0 | w = 2
+3 -- 2 | w = 8
+4 -- 2 | w = 19
+
+=================================
+
+[INFO] executou bfs:
+[INFO] 0 1 2 3 4 
+
+[INFO] executou dfs:
+[INFO] 0 1 3 2 4 
+
