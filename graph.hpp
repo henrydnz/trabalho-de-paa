@@ -37,6 +37,10 @@ class Graph {
     void dfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
     void topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
 
+    // for kosaraju use
+    EdgeTable transpose();
+
+    void kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component);
     public:
     
     Graph(bool isOriented, int nodeCount, EdgeTable edges) 
@@ -51,6 +55,7 @@ class Graph {
     vector<int> bfs(int origin);
     vector<int> dfs(int origin);
     vector<int> topologicOrder(int origin);
+    vector<vector<int>> kosaraju(int origin);
     vector<int> dijkstra(int origin);
 };
 

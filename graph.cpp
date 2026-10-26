@@ -159,6 +159,50 @@ vector<int> Graph::topologicOrder(int origin){
     return search(origin, &Graph::topologicDfsComponent, true);
 }
 
+vector<vector<int>> Graph::kosaraju(int origin) {
+    vector<int> firstPass = topologicOrder(origin);
+
+    EdgeTable transposed = transpose();
+
+    vector<vector<int>> ans;
+    vector<bool> visited(nodeCount, false);
+
+    for (int v : firstPass) {
+        if (!visited[v]) {
+            vector<int> component;
+
+            kosarajuDfs(v, transposed, visited, component);
+
+            ans.push_back(component);
+        }
+    }
+
+    return ans;
+}
+
+EdgeTable Graph::transpose() {
+    EdgeTable transposed(nodeCount);
+
+    for (int u = 0; u < nodeCount; u++) {
+        for (Edge e : edges[u]) {
+            transposed[e.dest].push_back(Edge(u, e.weight));
+        }
+    }
+
+    return transposed;
+}
+
+void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component) {
+    visited[node] = true;
+    component.push_back(node);
+
+    for (Edge e : transposed[node]) {
+        if (!visited[e.dest]) {
+            kosarajuDfs(e.dest, transposed, visited, component);
+        }
+    }
+}
+
 static bool hasNegativeWeights(int nodeCount, const vector<vector<Edge>>& edges){
     logsUtil.log("procurando por pesos negativos...");
     for(int i=0;i<nodeCount;i++) 
