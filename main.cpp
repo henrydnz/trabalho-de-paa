@@ -25,6 +25,7 @@ int main(){
 
     g->showLog();
     g->createDotFile();
+    getGraphView();
     
     res=g->bfs(0);
     

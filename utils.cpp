@@ -10,6 +10,26 @@ bool isPosInteger(string s){
     return true;
 }
 
+bool getGraphView(){
+    stringstream cmd;
+    cmd << GRAPHVIZ_PATH << " -Tpng " << DOTFILE_PATH << " -o " << VIEWPNGFILE_PATH;
+
+    int result = system(cmd.str().c_str());
+
+    if (result != 0) {
+        string err = "Erro ao gerar a visualizacao do grafo.";
+        cerr << err << endl;
+        logsUtil.log(err,1);
+        return false;
+    }
+
+    string msg = "Visualizacao do grafo gerada.";
+    cout << msg << endl;
+    logsUtil.log(msg);
+
+    return true;
+}
+
 void LogsUtil::log(const string& mensagem, int flag) {
     string tipo;
 

@@ -78,14 +78,14 @@ void Graph::showLog(){
     logsUtil.log("\n=================================\n", 3);
 }
 
-void Graph::createDotFile(){
+bool Graph::createDotFile(){
     ofstream dot(DOTFILE_PATH);
     if(!dot.is_open()){
         stringstream ss;
         ss << "Arquivo " << DOTFILE_PATH << "nao conseguiu ser aberto para a visualizacao do grafo.\n";
         cout << ss.str() << endl;
         logsUtil.log(ss.str(), 1);
-        return;
+        return false;
     }
 
     string name = isOriented ? "digraph" : "graph";
@@ -98,6 +98,8 @@ void Graph::createDotFile(){
         }
     }
     dot << "}";
+
+    return true;
 }
 
 vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns){

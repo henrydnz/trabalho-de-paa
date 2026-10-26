@@ -9,11 +9,16 @@
 #include <cctype>
 #include <limits>
 
+#include "graph.hpp"
+
 #define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 #define LOGFILE_PATH "logs.txt"
+
+#define GRAPHVIZ_PATH "\"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe\""
 #define DOTFILE_PATH "graphView.dot"
+#define VIEWPNGFILE_PATH "graphView.png"
 
 #define INT_INF numeric_limits<int>::max()
 
@@ -21,6 +26,7 @@
 using namespace std;
 
 bool isPosInteger(string s);
+bool getGraphView();
 
 class LogsUtil {
 private:

@@ -49,7 +49,7 @@ class Graph {
     
     void showLog();
 
-    void createDotFile();
+    bool createDotFile();
 
     int getNodeCount(){return nodeCount;}
     
