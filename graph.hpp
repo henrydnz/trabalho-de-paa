@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <fstream>

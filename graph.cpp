@@ -94,8 +94,7 @@ void Graph::createDotFile(){
     dot << name << " G {\n";
     for(int i=0;i<nodeCount;i++){
         for(Edge e:edges[i]){
-            if(e.dest >= i)
-                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+            dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
         }
     }
     dot << "}";
@@ -160,6 +159,13 @@ vector<int> Graph::topologicOrder(int origin){
 }
 
 vector<vector<int>> Graph::kosaraju(int origin) {
+    if(!isOriented){
+        string err = "Grafo nao orientado nao pode ser analisado por kosaraju";
+        cout << err << endl;
+        logsUtil.log(err,1);
+        return {};
+    }
+
     vector<int> firstPass = topologicOrder(origin);
 
     EdgeTable transposed = transpose();
@@ -170,13 +176,12 @@ vector<vector<int>> Graph::kosaraju(int origin) {
     for (int v : firstPass) {
         if (!visited[v]) {
             vector<int> component;
-
             kosarajuDfs(v, transposed, visited, component);
-
+            sort(component.begin(), component.end());
             ans.push_back(component);
         }
     }
-
+    sort(ans.begin(),ans.end(),[](const vector<int>&a,const vector<int>&b){return a.size()>b.size();});
     return ans;
 }
 
