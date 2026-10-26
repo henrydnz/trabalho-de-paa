@@ -94,8 +94,7 @@ void Graph::createDotFile(){
     dot << name << " G {\n";
     for(int i=0;i<nodeCount;i++){
         for(Edge e:edges[i]){
-            if(e.dest >= i)
-                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+            dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
         }
     }
     dot << "}";
@@ -157,6 +156,56 @@ vector<int> Graph::dfs(int origin){
 vector<int> Graph::topologicOrder(int origin){
     logsUtil.log("aplicando ordenacao topologica...");
     return search(origin, &Graph::topologicDfsComponent, true);
+}
+
+vector<vector<int>> Graph::kosaraju(int origin) {
+    if(!isOriented){
+        string err = "Grafo nao orientado nao pode ser analisado por kosaraju";
+        cout << err << endl;
+        logsUtil.log(err,1);
+        return {};
+    }
+
+    vector<int> firstPass = topologicOrder(origin);
+
+    EdgeTable transposed = transpose();
+
+    vector<vector<int>> ans;
+    vector<bool> visited(nodeCount, false);
+
+    for (int v : firstPass) {
+        if (!visited[v]) {
+            vector<int> component;
+            kosarajuDfs(v, transposed, visited, component);
+            sort(component.begin(), component.end());
+            ans.push_back(component);
+        }
+    }
+    sort(ans.begin(),ans.end(),[](const vector<int>&a,const vector<int>&b){return a.size()>b.size();});
+    return ans;
+}
+
+EdgeTable Graph::transpose() {
+    EdgeTable transposed(nodeCount);
+
+    for (int u = 0; u < nodeCount; u++) {
+        for (Edge e : edges[u]) {
+            transposed[e.dest].push_back(Edge(u, e.weight));
+        }
+    }
+
+    return transposed;
+}
+
+void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component) {
+    visited[node] = true;
+    component.push_back(node);
+
+    for (Edge e : transposed[node]) {
+        if (!visited[e.dest]) {
+            kosarajuDfs(e.dest, transposed, visited, component);
+        }
+    }
 }
 
 static bool hasNegativeWeights(int nodeCount, const vector<vector<Edge>>& edges){

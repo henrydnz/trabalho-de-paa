@@ -47,4 +47,15 @@ int main(){
     logsUtil.log(ss.str()); ss.str("");
     for(int n:res) ss << n << " | "; ss << endl;
     logsUtil.log(ss.str()); ss.str("");
+
+    vector<vector<int>> ans;
+    ans = g->kosaraju(0);
+
+    for(vector<int> v:ans){
+        ss << "Component: ";
+        for(int n:v){
+            ss << " " << n;
+        }
+        logsUtil.log(ss.str()); ss.str("");
+    }
 }
