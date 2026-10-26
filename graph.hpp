@@ -43,6 +43,10 @@ class Graph {
     : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
     
     void showLog();
+
+    void createDotFile();
+
+    int getNodeCount(){return nodeCount;}
     
     vector<int> bfs(int origin);
     vector<int> dfs(int origin);

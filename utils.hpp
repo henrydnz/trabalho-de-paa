@@ -7,13 +7,15 @@
 #include <fstream>
 #include <algorithm>
 #include <cctype>
+#include <limits>
 
 #define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 #define LOGFILE_PATH "logs.txt"
+#define DOTFILE_PATH "graphView.dot"
 
-#define INFTY (unsigned)!((int)0)
+#define INT_INF numeric_limits<int>::max()
 
 
 using namespace std;

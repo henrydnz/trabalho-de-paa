@@ -1,15 +1,50 @@
 #include "utils.hpp"
 #include "graph.hpp"
 
+void logRes(vector<int> res){
+    stringstream ss;
+    for(int n : res) ss << n << " ";
+    ss << endl;
+
+    logsUtil.log(ss.str());
+}
+
 int main(){
     logsUtil.resetLog();
 
-    Graph* g = readGraph("test.txt");
+    string path = "test.txt";
+
+    Graph* g = readGraph(path);
+    if(!g){
+        cerr << "Nao foi possivel ler o grafo no caminho " << path << endl << "Leia logs";
+        return 0;
+    }
+
+    stringstream ss;
+    vector<int> res;
 
     g->showLog();
+    g->createDotFile();
+    
+    res=g->bfs(0);
+    
+    for(int n:res) ss << " -> " << n; ss << endl;
+    logsUtil.log(ss.str()); ss.str("");
 
-    g->bfs(0);
-    g->dfs(0);
-    g->topologicOrder(0);
-    g->dijkstra(0);
+    res=g->dfs(0);
+
+    for(int n:res) ss << " -> " << n; ss << endl;
+    logsUtil.log(ss.str()); ss.str("");
+
+    res=g->topologicOrder(0);
+
+    for(int n:res) ss << " " << n; ss << endl;
+    logsUtil.log(ss.str()); ss.str("");
+
+    res=g->dijkstra(0);
+
+    for(int i=0;i<g->getNodeCount();i++) ss << i << " | ";
+    logsUtil.log(ss.str()); ss.str("");
+    for(int n:res) ss << n << " | "; ss << endl;
+    logsUtil.log(ss.str()); ss.str("");
 }

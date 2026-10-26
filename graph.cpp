@@ -2,9 +2,13 @@
 
 Graph* readGraph(string filename){
     ifstream file(filename);
-    if(!file.is_open())
-        logsUtil.log("Arquivo " + filename + " nao conseguiu ser aberto para a leitura do grafo.\n" +
-            "Cheque se o nome coincide, ou se o arquivo esta na mesma pasta.", 1);
+    if(!file.is_open()){
+        stringstream ss;
+        ss << "Arquivo " << filename << "nao conseguiu ser aberto apra a leitura do grafo.\n" <<
+        "Cheque se  o nome coincide, ou se o arquivo esta na mesma pasta.";
+        cout << ss.str() << endl;
+        logsUtil.log(ss.str(), 1);
+    }
     
     string line;
     smatch match;
@@ -40,8 +44,16 @@ Graph* readGraph(string filename){
         int origin = stoi(match[1]);
         int dest =   stoi(match[2]);
         int weight = stoi(match[3]);
-
+        
+        if(origin >= nodeCount || dest >= nodeCount) {
+            stringstream err; 
+            err << "No origem ou destino invalidos ( linha " << lineCount << ").";
+            logsUtil.log(err.str(), 1);
+            return nullptr;
+        }
+        
         edgeTable[origin].push_back(Edge(dest,weight));
+        if(!oriented) edgeTable[dest].push_back(Edge(origin,weight));
     }
 
     logsUtil.log("Arquivo " + filename + " lido com sucesso.");
@@ -55,41 +67,54 @@ void Graph::showLog(){
     logsUtil.log("Orientado: " + to_string(isOriented), 3);
     logsUtil.log("Num Vertices: " + to_string(nodeCount), 3);
 
-    for(int i=0;i<nodeCount;i++)
-        for(Edge l : edges[i])
-            logsUtil.log(to_string(i) + " -- " + to_string(l.dest) + " | w = " + to_string(l.weight), 3);
+    for(int i=0;i<nodeCount;i++){
+        for(Edge l : edges[i]){
+            stringstream ss;
+            ss<<i<<"-"<<l.dest<<"|w="<<l.weight;
+            logsUtil.log(ss.str(), 3);
+        }
+    }
 
     logsUtil.log("\n=================================\n", 3);
 }
 
+void Graph::createDotFile(){
+    ofstream dot(DOTFILE_PATH);
+    if(!dot.is_open()){
+        stringstream ss;
+        ss << "Arquivo " << DOTFILE_PATH << "nao conseguiu ser aberto para a visualizacao do grafo.\n";
+        cout << ss.str() << endl;
+        logsUtil.log(ss.str(), 1);
+        return;
+    }
+
+    string name = isOriented ? "digraph" : "graph";
+    string edge = isOriented ? " -> " : " -- ";
+
+    dot << name << " G {\n";
+    for(int i=0;i<nodeCount;i++){
+        for(Edge e:edges[i]){
+            if(e.dest >= i)
+                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+        }
+    }
+    dot << "}";
+}
+
 vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns){
-    vector<int> traverse;
-    vector<bool> visited (nodeCount, false);
-    
+    vector<int> traverse; vector<bool> visited (nodeCount, false);
+    // apply method on origin node
     (this->*method)(origin, visited, traverse);
-    
-    for(int i=0;i<nodeCount;i++)
-        if(!visited[i])
-            (this->*method)(i, visited, traverse);
+    // apply method on remaining components
+    for(int i=0;i<nodeCount;i++) if(!visited[i]) (this->*method)(i, visited, traverse);
     
     if(reverseAns) reverse(traverse.begin(), traverse.end());
-
-    logsUtil.log("resultado:");
-
-    stringstream ss;
-    for(int n:traverse) ss << n << " ";
-    logsUtil.log(ss.str()+'\n');
-
     return traverse;
 };
 
 void Graph::bfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
-
-    queue<int> q;
-
-    q.push(node);
-
+    queue<int> q; q.push(node);
     while(!q.empty()){
         int u = q.front(); q.pop();
         traverse.push_back(u);
@@ -105,42 +130,37 @@ void Graph::bfsComponent(int node, vector<bool>& visited, vector<int>& traverse)
 
 void Graph::dfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
-    
     traverse.push_back(node);
-
     for(Edge e : edges[node]){
         int v = e.dest;
-        if(!visited[v]) 
-            dfsComponent(v, visited, traverse);
+        if(!visited[v]) dfsComponent(v, visited, traverse);
     }
 }
 
 void Graph::topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
-
     for(Edge e : edges[node]){
         int v = e.dest;
-        if(!visited[v]) 
-            topologicDfsComponent(v, visited, traverse);
+        if(!visited[v]) topologicDfsComponent(v, visited, traverse);
     }
-
     traverse.push_back(node);
 }
 
 vector<int> Graph::bfs(int origin){
-    logsUtil.log("aplicando busca bfs");
+    logsUtil.log("aplicando busca bfs...");
     return search(origin, &Graph::bfsComponent, false);
 }
 vector<int> Graph::dfs(int origin){
-    logsUtil.log("aplicando busca dfs");
+    logsUtil.log("aplicando busca dfs...");
     return search(origin, &Graph::dfsComponent, false);
 }
 vector<int> Graph::topologicOrder(int origin){
-    logsUtil.log("aplicando ordenacao topologica");
+    logsUtil.log("aplicando ordenacao topologica...");
     return search(origin, &Graph::topologicDfsComponent, true);
 }
 
-static bool hasNegativeWeights(int nodeCount, vector<vector<Edge>> edges){
+static bool hasNegativeWeights(int nodeCount, const vector<vector<Edge>>& edges){
+    logsUtil.log("procurando por pesos negativos...");
     for(int i=0;i<nodeCount;i++) 
         for(Edge e : edges[i])
             if(e.weight < 0) return true;
@@ -156,34 +176,31 @@ vector<int> Graph::dijkstra(int origin){
         return {};
     }
 
-    vector<int> dist (nodeCount, INFTY);
-
+    vector<int> dist (nodeCount, INT_INF);
     dist[origin] = 0;
 
     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
-
     pq.push({0,origin});
 
     while(!pq.empty()){
         pair<int,int> p = pq.top(); pq.pop();
-
-        int d = p.first;
-        int u = p.second;
+        int d = p.first; int u = p.second;
 
         if(d>dist[u]) continue;
 
         for(Edge e:edges[u]){
-            int v = e.dest;
-            int w = e.weight;
+            int v = e.dest; int w = e.weight;
 
             int newDist = dist[u]+w;
 
             if(newDist<dist[v]){
-                dist[v] = newDist;
+                dist[v]=newDist;
                 pq.push({newDist,v});
             }
         }
     }
+
+    for(int& i:dist) if(i==INT_INF) i=-1;
 
     return dist;
 }
