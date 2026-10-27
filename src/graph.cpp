@@ -63,11 +63,10 @@ Graph* readGraph(string filename){
 }
 
 void Graph::showLog(){
-    logsUtil.log("\n===== Informacoes do Grafo =====\n", 3);
-
     logsUtil.log("Orientado: " + to_string(isOriented), 3);
     logsUtil.log("Num Vertices: " + to_string(nodeCount), 3);
 
+    logsUtil.log("n1-n2:w=weight",3);
     for(int i=0;i<nodeCount;i++){
         for(Edge l : edges[i]){
             stringstream ss;
@@ -75,8 +74,6 @@ void Graph::showLog(){
             logsUtil.log(ss.str(), 3);
         }
     }
-
-    logsUtil.log("\n=================================\n", 3);
 }
 
 bool Graph::createDotFile(){
@@ -151,20 +148,34 @@ void Graph::topologicDfsComponent(int node, vector<bool>& visited, vector<int>& 
     traverse.push_back(node);
 }
 
+static void logNodePath(vector<int>& path){
+    stringstream ss;
+    for (size_t i = 0; i < path.size(); i++) ss << path[i] << (i + 1 == path.size() ? "" : "-");
+    logsUtil.log(ss.str());
+}
+
 vector<int> Graph::bfs(int origin){
-    logsUtil.log("aplicando busca bfs...");
-    return search(origin, &Graph::bfsComponent, false);
+    logsUtil.log("aplicando busca bfs... origem:"+to_string(origin));
+    vector<int> path = search(origin, &Graph::bfsComponent, false);
+    logNodePath(path);
+    return path;
 }
 vector<int> Graph::dfs(int origin){
-    logsUtil.log("aplicando busca dfs...");
-    return search(origin, &Graph::dfsComponent, false);
+    logsUtil.log("aplicando busca dfs... origem:"+to_string(origin));
+    vector<int> path = search(origin, &Graph::dfsComponent, false);
+    logNodePath(path);
+    return path;
 }
 vector<int> Graph::topologicOrder(int origin){
-    logsUtil.log("aplicando ordenacao topologica...");
-    return search(origin, &Graph::topologicDfsComponent, true);
+    logsUtil.log("aplicando ordenacao topologica... origem:"+to_string(origin));
+    vector<int> path = search(origin, &Graph::topologicDfsComponent, true);
+    logNodePath(path);
+    return path;
 }
 
 Components Graph::kosaraju(int origin) {
+    logsUtil.log("aplicando kosaraju... origem:"+to_string(origin));
+
     if(!isOriented){
         string err = "Grafo nao orientado nao pode ser analisado por kosaraju";
         cout << err << endl;
@@ -216,14 +227,21 @@ void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& vis
 
 static bool hasNegativeWeights(int nodeCount, const EdgeTable& edges){
     logsUtil.log("procurando por pesos negativos...");
-    for(int i=0;i<nodeCount;i++) 
-        for(Edge e : edges[i])
-            if(e.weight < 0) return true;
+    for(int i=0;i<nodeCount;i++) for(Edge e : edges[i]) if(e.weight < 0) return true;
+    logsUtil.log("grafo nao possui pesos negativos.");
     return false;
 }
 
+static void showDijkstraTable(vector<int>& res){
+    vector<int> a(res.size());
+    for(int i=0;i<res.size();i++) a[i]=i;
+    logsUtil.log("nodes \\n dist:");
+    logNodePath(a);
+    logNodePath(res);
+}
+
 vector<int> Graph::dijkstra(int origin){
-    logsUtil.log("aplicando dijkstra");
+    logsUtil.log("aplicando dijkstra... origem:"+to_string(origin));
     if(hasNegativeWeights(nodeCount, edges)){
         string err = "Nao pode aplicar dijkstra em grafo com pesos negativos.";
         cerr << err << endl;
@@ -256,6 +274,8 @@ vector<int> Graph::dijkstra(int origin){
     }
 
     for(int& i:dist) if(i==INT_INF) i=-1;
+
+    showDijkstraTable(dist);
 
     return dist;
 }

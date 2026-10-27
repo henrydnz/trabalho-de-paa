@@ -23,7 +23,7 @@ bool getGraphView(string dotFilePath, string viewFilePath){
         return false;
     }
 
-    string msg = "Visualizacao do grafo gerada.";
+    string msg = "Visualizacao do grafo gerada em " + viewFilePath;
     cout << msg << endl;
     logsUtil.log(msg);
 
