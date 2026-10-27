@@ -20,11 +20,12 @@ struct Edge {
 };
 
 typedef vector<vector<Edge>> EdgeTable;
+typedef vector<vector<int>> Components;
 
 class Graph {
     private:
 
-    vector<vector<Edge>> edges;
+    EdgeTable edges;
     int nodeCount;
     bool isOriented;
 
@@ -38,10 +39,11 @@ class Graph {
     void dfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
     void topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
 
+    
     // for kosaraju use
+    void kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component);
     EdgeTable transpose();
 
-    void kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component);
     public:
     
     Graph(bool isOriented, int nodeCount, EdgeTable edges) 
@@ -53,11 +55,14 @@ class Graph {
 
     int getNodeCount(){return nodeCount;}
     
+    // 
     vector<int> bfs(int origin);
     vector<int> dfs(int origin);
     vector<int> topologicOrder(int origin);
-    vector<vector<int>> kosaraju(int origin);
+    Components kosaraju(int origin);
     vector<int> dijkstra(int origin);
+    // not implemented
+    pair<int, EdgeTable> kruskal(int origin);
 };
 
 Graph* readGraph(string filename);

@@ -10,9 +10,9 @@ bool isPosInteger(string s){
     return true;
 }
 
-bool getGraphView(){
+bool getGraphView(string dotFilePath, string viewFilePath){
     stringstream cmd;
-    cmd << GRAPHVIZ_PATH << " -Tpng " << DOTFILE_PATH << " -o " << VIEWPNGFILE_PATH;
+    cmd << GRAPHVIZ_PATH << " -Tpng " << dotFilePath<< " -o " << viewFilePath;
 
     int result = system(cmd.str().c_str());
 

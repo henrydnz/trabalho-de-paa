@@ -12,7 +12,7 @@ void logRes(vector<int> res){
 int main(){
     logsUtil.resetLog();
 
-    string path = "test.txt";
+    string path = "..\\input\\test.txt";
 
     Graph* g = readGraph(path);
     if(!g){
@@ -25,7 +25,7 @@ int main(){
 
     g->showLog();
     g->createDotFile();
-    getGraphView();
+    getGraphView(DOTFILE_PATH, VIEWPNGFILE_PATH);
     
     res=g->bfs(0);
     

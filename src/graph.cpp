@@ -2,6 +2,7 @@
 
 Graph* readGraph(string filename){
     ifstream file(filename);
+    
     if(!file.is_open()){
         stringstream ss;
         ss << "Arquivo " << filename << "nao conseguiu ser aberto apra a leitura do grafo.\n" <<
@@ -53,7 +54,7 @@ Graph* readGraph(string filename){
         }
         
         edgeTable[origin].push_back(Edge(dest,weight));
-        if(!oriented) edgeTable[dest].push_back(Edge(origin,weight));
+        if(!oriented && origin != dest) edgeTable[dest].push_back(Edge(origin,weight));
     }
 
     logsUtil.log("Arquivo " + filename + " lido com sucesso.");
@@ -94,7 +95,10 @@ bool Graph::createDotFile(){
     dot << name << " G {\n";
     for(int i=0;i<nodeCount;i++){
         for(Edge e:edges[i]){
-            dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+            // no repeated edges on not oriented graphs
+            if(isOriented || i <= e.dest){
+                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+            }
         }
     }
     dot << "}";
@@ -160,7 +164,7 @@ vector<int> Graph::topologicOrder(int origin){
     return search(origin, &Graph::topologicDfsComponent, true);
 }
 
-vector<vector<int>> Graph::kosaraju(int origin) {
+Components Graph::kosaraju(int origin) {
     if(!isOriented){
         string err = "Grafo nao orientado nao pode ser analisado por kosaraju";
         cout << err << endl;
@@ -172,7 +176,7 @@ vector<vector<int>> Graph::kosaraju(int origin) {
 
     EdgeTable transposed = transpose();
 
-    vector<vector<int>> ans;
+    Components ans;
     vector<bool> visited(nodeCount, false);
 
     for (int v : firstPass) {
@@ -210,7 +214,7 @@ void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& vis
     }
 }
 
-static bool hasNegativeWeights(int nodeCount, const vector<vector<Edge>>& edges){
+static bool hasNegativeWeights(int nodeCount, const EdgeTable& edges){
     logsUtil.log("procurando por pesos negativos...");
     for(int i=0;i<nodeCount;i++) 
         for(Edge e : edges[i])
