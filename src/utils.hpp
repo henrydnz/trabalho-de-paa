@@ -17,7 +17,7 @@
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 
 
-#define GRAPHVIZ_PATH "C:\\msys64\\ucrt64\\bin\\dot.exe"
+#define GRAPHVIZ_PATH "\"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe\""
 
 #define LOGFILE_PATH "..\\logs\\logs.txt"
 
@@ -34,7 +34,14 @@ using namespace std;
 /// @param s string a ser verificada
 /// @return true se a string possui apenas digitos e false do contrario
 bool isPosInteger(string s);
+
+/// @brief Chama o dot.exe do GraphViz pelo GRAPHVIZ_PATH e executa um 
+///         comando que cria um .png com base no arquivo filename.dot
+/// @param filename O nome do arquivo (sem .dot)
+/// @return retorna um valor booleano que diz se a operacao foi concluida com sucesso
 bool getGraphView(string filename);
+
+/// @brief  cria as pastas base que o program aprecisa pra funcionar
 void createFolders();
 
 /// @brief Classe auxiliar Singleton para log

@@ -89,8 +89,7 @@ class Graph {
     vector<int> topologicOrder(int origin);
     Components kosaraju(int origin);
     vector<int> dijkstra(int origin);
-    // not implemented
-    pair<int, TreeEdges> kruskal(int origin);
+    pair<int, TreeEdges> kruskal();
 };
 
 Graph* readGraph(string filename);

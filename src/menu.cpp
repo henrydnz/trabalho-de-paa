@@ -116,13 +116,12 @@ void menuAlgorithms(Graph* g, string filename) {
                 cout << "Digite o vertice de origem para Kruskal: ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
-                    pair<int, TreeEdges> kruskalRes = g->kruskal(origin);
+                    pair<int, TreeEdges> kruskalRes = g->kruskal();
                     TreeEdges treeEdges = kruskalRes.second;
                     
                     cout << "peso total: " << kruskalRes.first << endl;
                     cout << "arestas: ";
-                    for(int i=0;i<treeEdges.size();i++)
-                        for(int n : treeEdges[i]) cout << "(" << i << ", " << n << ") ";
+                    for(int i=0;i<treeEdges.size();i++) for(int n : treeEdges[i]) cout << "(" << i << ", " << n << ") "; cout << endl;
                     if(g->createDotFileKruskal(filename, treeEdges)) getGraphView(filename + "_kruskal");
                     else cout << "Erro na criacao da visualizacao. checar logs.";
                 } else cout << "Vertice de origem invalido.\n";

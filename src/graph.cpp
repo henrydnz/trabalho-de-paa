@@ -361,7 +361,7 @@ vector<pair<int, Edge>> sortEdgesByWeight(EdgeTable& edges){
         for(Edge e : edges[i]){ sorted.push_back({i, e}); }
     }
 
-    sort(sorted.begin(),sorted.end(),[](const pair<int, Edge>& a, const pair<int, Edge>& b){return a.second.weight > b.second.weight;});
+    sort(sorted.begin(),sorted.end(),[](const pair<int, Edge>& a, const pair<int, Edge>& b){return a.second.weight < b.second.weight;});
 
     return sorted;
 }
@@ -377,7 +377,7 @@ static void _union(vector<int>& parent, int u, int v){
     if(rootu != rootv) parent[rootu] = rootv;
 }
 
-pair<int, TreeEdges> Graph::kruskal(int origin){
+pair<int, TreeEdges> Graph::kruskal(){
     vector<int> parent(nodeCount);
     for(int i=0;i<nodeCount;i++) parent[i]=i;
 
