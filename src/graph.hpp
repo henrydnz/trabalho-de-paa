@@ -30,19 +30,45 @@ class Graph {
     int nodeCount;
     bool isOriented;
 
-    // distribute method function on all graph componentsk
-    // method function structure: 
-    //      void Graph::method(int node, vector<bool>& visited, vector<int>& traverse);
+    /// @brief Funcao responsavel por distribuir uma busca no grafo, iniciando as recursoes 
+    /// @param origin Numero do no onde a busca sera iniciada
+    /// @param method Ponteiro para a funcao que sera realizada
+    /// @param reverseAns Flaga para se a resposta precisa ser invertida (como na Topologica)
+    /// @return Um vetor de inteiros com a resposta da funcao realizada
     vector<int> search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns);
     
     // search functions (only on components)
+
+    /// @brief Funcao que realiza uma BFS (Breadth First Search) (Recursiva)
+    /// @param node Numero do no na qual a a busca sera iniciada
+    /// @param visited Vetor de flags para identificar os nos visitados
+    /// @param traverse Vetor com os resultados da busca
     void bfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
+
+    /// @brief Funcao que realiza uma DFS (Depth First Search) (Recursiva)
+    /// @param node Numero do no na qual a a busca sera iniciada
+    /// @param visited Vetor de flags para identificar os nos visitados
+    /// @param traverse Vetor com os resultados da busca
     void dfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
+
+    /// @brief Funcao que realiza uma DFS Topologica (Recursiva)
+    /// @param node Numero do no na qual a a busca sera iniciada
+    /// @param visited Vetor de flags para identificar os nos visitados
+    /// @param traverse Vetor com os resultados da busca
     void topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse);
 
     
     // for kosaraju use
+
+    /// @brief Busca DFS especial que usa EdgeTable transposta no lugar da original do grafo
+    /// @param node Numero do no na qual a a busca sera iniciada
+    /// @param transposed EdgeTable transposta (com direcoes invertidas) para o algoritmo de Kosaraju
+    /// @param visited Vetor de flags para identificar os nos visitados
+    /// @param component Vetor com a componente fortemente conexa encontrada
     void kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component);
+
+    /// @brief Transpoe a EdgeTable do grafo para uso do Kosaraju
+    /// @return Uma EdgeTable transposta
     EdgeTable transpose();
 
     public:
