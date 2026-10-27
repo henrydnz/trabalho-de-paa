@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cctype>
 #include <limits>
+#include <filesystem>
 
 #include "graph.hpp"
 
@@ -15,24 +16,23 @@
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 
-#define LOGFILE_PATH "..\\logs\\logs.txt"
 
 #define GRAPHVIZ_PATH "\"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe\""
 
-#define DOTFILE_PATH "..\\graph-view\\graphView"
-#define DOTFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
-#define DOTFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
+#define LOGFILE_PATH "..\\logs\\logs.txt"
 
-#define VIEWPNGFILE_PATH "..\\graph-view\\graphView"
-#define VIEWPNGFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
-#define VIEWPNGFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
+#define INPUT_PATH "..\\input\\"
+#define LOGS_PATH "..\\logs\\"
+#define DOT_PATH "..\\graph-view\\dot-files\\"
+#define IMAGE_VIEW_PATH "..\\graph-view\\image-files\\"
 
 #define INT_INF numeric_limits<int>::max()
 
 using namespace std;
 
 bool isPosInteger(string s);
-bool getGraphView(string dotFilePath, string viewFilePath);
+bool getGraphView(string filename);
+void createFolders();
 
 class LogsUtil {
 private:

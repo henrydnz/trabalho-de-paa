@@ -51,9 +51,9 @@ class Graph {
     : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
 
 
-    bool createDotFile();
-    bool createDotFileKosaraju(Components& components);
-    bool createDotFileKruskal(TreeEdges& treeEdges);
+    bool createDotFile(string filename);
+    bool createDotFileKosaraju(string filename, Components& components);
+    bool createDotFileKruskal(string filename, TreeEdges& treeEdges);
 
     int getNodeCount(){return nodeCount;}
     
