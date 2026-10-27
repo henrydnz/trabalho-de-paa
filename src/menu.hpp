@@ -9,6 +9,7 @@
 
 using namespace std;
 
+/// @brief Executa o menu no terminal
 void runMenu();
 
 #endif
