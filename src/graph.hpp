@@ -21,6 +21,7 @@ struct Edge {
 
 typedef vector<vector<Edge>> EdgeTable;
 typedef vector<vector<int>> Components;
+typedef vector<vector<int>> TreeEdges;
 
 class Graph {
     private:
@@ -48,10 +49,11 @@ class Graph {
     
     Graph(bool isOriented, int nodeCount, EdgeTable edges) 
     : isOriented(isOriented), nodeCount(nodeCount), edges(edges) {}
-    
-    void showLog();
+
 
     bool createDotFile();
+    bool createDotFileKosaraju(Components& components);
+    bool createDotFileKruskal(TreeEdges& treeEdges);
 
     int getNodeCount(){return nodeCount;}
     
@@ -62,7 +64,7 @@ class Graph {
     Components kosaraju(int origin);
     vector<int> dijkstra(int origin);
     // not implemented
-    pair<int, EdgeTable> kruskal(int origin);
+    pair<int, TreeEdges> kruskal(int origin);
 };
 
 Graph* readGraph(string filename);

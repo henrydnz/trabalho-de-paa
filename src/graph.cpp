@@ -26,6 +26,8 @@ Graph* readGraph(string filename){
     }
     bool oriented = (match[1] == "sim") ? true : false;
 
+    logsUtil.log("Orientado: " + to_string(oriented));
+
     // second line
     getline(file, line);
     if(!regex_match(line, match, secondLine)){
@@ -33,6 +35,8 @@ Graph* readGraph(string filename){
         return nullptr;
     }
     int nodeCount = stoi(match[1]);
+
+    logsUtil.log("Num Vertices: " + to_string(nodeCount));
 
     // third line (edges)
     EdgeTable edgeTable (nodeCount);
@@ -54,6 +58,7 @@ Graph* readGraph(string filename){
         }
         
         edgeTable[origin].push_back(Edge(dest,weight));
+        logsUtil.log("Adicionou Vertice: (" + to_string(origin) + ", " + to_string(dest) + "), peso = " + to_string(weight));
         if(!oriented && origin != dest) edgeTable[dest].push_back(Edge(origin,weight));
     }
 
@@ -62,26 +67,11 @@ Graph* readGraph(string filename){
     return new Graph(oriented, nodeCount, edgeTable);
 }
 
-void Graph::showLog(){
-    logsUtil.log("Orientado: " + to_string(isOriented), 3);
-    logsUtil.log("Num Vertices: " + to_string(nodeCount), 3);
-
-    logsUtil.log("n1-n2:w=weight",3);
-    for(int i=0;i<nodeCount;i++){
-        for(Edge l : edges[i]){
-            stringstream ss;
-            ss<<i<<"-"<<l.dest<<"|w="<<l.weight;
-            logsUtil.log(ss.str(), 3);
-        }
-    }
-}
-
 bool Graph::createDotFile(){
     ofstream dot(DOTFILE_PATH);
     if(!dot.is_open()){
         stringstream ss;
-        ss << "Arquivo " << DOTFILE_PATH << "nao conseguiu ser aberto para a visualizacao do grafo.\n";
-        cout << ss.str() << endl;
+        ss << "Arquivo " << DOTFILE_PATH << " nao conseguiu ser aberto para a visualizacao do grafo.\n";
         logsUtil.log(ss.str(), 1);
         return false;
     }
@@ -90,11 +80,91 @@ bool Graph::createDotFile(){
     string edge = isOriented ? " -> " : " -- ";
 
     dot << name << " G {\n";
+    dot << "edge [color=gray]\n";
     for(int i=0;i<nodeCount;i++){
         for(Edge e:edges[i]){
             // no repeated edges on not oriented graphs
             if(isOriented || i <= e.dest){
                 dot << i << edge << e.dest << " [label=\"" << e.weight << "\"];\n";
+            }
+        }
+    }
+    dot << "}";
+
+    return true;
+}
+
+bool Graph::createDotFileKosaraju(Components& components){
+    ofstream dot(DOTFILE_PATH_KOSARAJU);
+    if(!dot.is_open()){
+        stringstream ss;
+        ss << "Arquivo " << DOTFILE_PATH_KOSARAJU << "nao conseguiu ser aberto para a visualizacao do grafo kosaraju.\n";
+        cout << ss.str() << endl;
+        logsUtil.log(ss.str(), 1);
+        return false;
+    }
+
+    string name = isOriented ? "digraph" : "graph";
+    string edge = isOriented ? " -> " : " -- ";
+
+    vector<string> colors = {
+        "red", "blue", "green", "orange", "purple",
+        "cyan", "magenta", "gold", "brown", "deeppink"
+    };
+
+    dot << name << " G {\n";
+    dot << "edge [color=gray]\n";
+    for(int i=0;i<nodeCount;i++){
+        for(Edge e:edges[i]){
+            // no repeated edges on not oriented graphs
+            if(isOriented || i <= e.dest){
+                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"";
+                for(int j=0; j<components.size(); j++){
+                    vector<int> component = components[j];
+
+                    if(find(component.begin(),component.end(),i) != component.end() &&
+                        find(component.begin(),component.end(),e.dest) != component.end()
+                    ){
+                        string color = colors[j%colors.size()];
+                        dot << ", color=" << color << ", fontcolor=" << color;
+                    }
+                }
+                dot << "];\n";
+            }
+        }
+    }
+    dot << "}";
+
+    return true;
+}
+
+bool Graph::createDotFileKruskal(TreeEdges& treeEdges){
+    ofstream dot(DOTFILE_PATH_KRUSKAL);
+    if(!dot.is_open()){
+        stringstream ss;
+        ss << "Arquivo " << DOTFILE_PATH_KRUSKAL << "nao conseguiu ser aberto para a visualizacao do grafo kosaraju.\n";
+        cout << ss.str() << endl;
+        logsUtil.log(ss.str(), 1);
+        return false;
+    }
+
+    string name = isOriented ? "digraph" : "graph";
+    string edge = isOriented ? " -> " : " -- ";
+
+    vector<string> colors = {
+        "red", "blue", "green", "orange", "purple",
+        "cyan", "magenta", "gold", "brown", "deeppink"
+    };
+
+    dot << name << " G {\n";
+    dot << "edge [color=gray]\n";
+    for(int i=0;i<nodeCount;i++){
+        for(Edge e:edges[i]){
+            // no repeated edges on not oriented graphs
+            if(isOriented || i <= e.dest){
+                dot << i << edge << e.dest << " [label=\"" << e.weight << "\"";
+                for(int n : treeEdges[i]) if(n == e.dest) dot << ", color=red, fontcolor=red";
+                dot << "];\n";
             }
         }
     }
@@ -199,6 +269,7 @@ Components Graph::kosaraju(int origin) {
         }
     }
     sort(ans.begin(),ans.end(),[](const vector<int>&a,const vector<int>&b){return a.size()>b.size();});
+
     return ans;
 }
 
@@ -280,5 +351,55 @@ vector<int> Graph::dijkstra(int origin){
     return dist;
 }
 
-// =================================================
+vector<pair<int, Edge>> sortEdgesByWeight(EdgeTable& edges){
+    logsUtil.log("ordenando vertices por peso");
 
+    vector<pair<int, Edge>> sorted;
+
+    for(int i = 0; i < edges.size(); i++){
+        for(Edge e : edges[i]){ sorted.push_back({i, e}); }
+    }
+
+    sort(sorted.begin(),sorted.end(),[](const pair<int, Edge>& a, const pair<int, Edge>& b){return a.second.weight > b.second.weight;});
+
+    return sorted;
+}
+
+static int _find(vector<int>& parent, int v){
+    if(parent[v]!=v) parent[v]=_find(parent,parent[v]);
+    return parent[v];
+}
+
+static void _union(vector<int>& parent, int u, int v){
+    int rootu = _find(parent, u);
+    int rootv = _find(parent, v);
+    if(rootu != rootv) parent[rootu] = rootv;
+}
+
+pair<int, TreeEdges> Graph::kruskal(int origin){
+    vector<int> parent(nodeCount);
+    for(int i=0;i<nodeCount;i++) parent[i]=i;
+
+    TreeEdges treeEdges (nodeCount);
+    int count = 0;
+    int totalWeight = 0;
+
+    vector<pair<int, Edge>> sortedEdges = sortEdgesByWeight(edges);
+
+    for(pair<int,Edge> e : sortedEdges){
+        int u = e.first;
+        int v = e.second.dest;
+        int w = e.second.weight;
+
+        if(_find(parent, u) != _find(parent, v)){
+            _union(parent, u, v);
+            treeEdges[u].push_back(v);
+            totalWeight += w;
+            count++;
+        }
+
+        if(count == nodeCount-1) break;
+    }
+
+    return {totalWeight, treeEdges};
+}

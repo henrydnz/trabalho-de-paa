@@ -14,19 +14,18 @@ void pauseMenu() {
     cin.get(); 
 }
 
-void menuAlgorithms(Graph* g) {
+void menuAlgorithms(Graph* g, string name) {
     int option;
     do {
         cout << "\n========== MENU DE ALGORITMOS ==========\n";
-        cout << "1. Desenho de grafo\n";
-        cout << "2. Busca em profundidade (DFS)\n";
-        cout << "3. Busca em largura (BFS)\n";
-        cout << "4. Ordenacao topologica\n";
-        cout << "5. Componentes fortemente conexas (Kosaraju)\n";
-        cout << "6. Dijkstra\n";
-        cout << "7. Kruskal\n";
-        cout << "8. Carregar novo grafo\n";
-        cout << "9. Sair do programa\n";
+        cout << "1. Busca em profundidade (DFS)\n";
+        cout << "2. Busca em largura (BFS)\n";
+        cout << "3. Ordenacao topologica\n";
+        cout << "4. Componentes fortemente conexas (Kosaraju)\n";
+        cout << "5. Dijkstra\n";
+        cout << "6. Kruskal\n";
+        cout << "7. Carregar novo grafo\n";
+        cout << "8. Sair do programa\n";
         cout << "========================================\n";
         cout << "Escolha uma opcao: ";
         
@@ -46,11 +45,6 @@ void menuAlgorithms(Graph* g) {
 
         switch(option) {
             case 1:
-                if(g->createDotFile()) getGraphView(DOTFILE_PATH, VIEWPNGFILE_PATH);
-                pauseMenu();
-                break;
-                
-            case 2:
                 cout << "Digite o vertice de origem para a Busca em Profundidade (DFS): ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
@@ -61,7 +55,7 @@ void menuAlgorithms(Graph* g) {
                 pauseMenu();
                 break;
                 
-            case 3:
+            case 2:
                 cout << "Digite o vertice de origem para a Busca em Largura (BFS): ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
@@ -72,7 +66,7 @@ void menuAlgorithms(Graph* g) {
                 pauseMenu();
                 break;
                 
-            case 4:
+            case 3:
                 cout << "Digite o vertice de origem para a Ordenacao Topologica: ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
@@ -83,7 +77,7 @@ void menuAlgorithms(Graph* g) {
                 pauseMenu();
                 break;
                 
-            case 5: 
+            case 4: 
                 cout << "Digite o vertice de origem para Componentes Fortemente Conexas (Kosaraju): ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
@@ -96,12 +90,17 @@ void menuAlgorithms(Graph* g) {
                             }
                             cout << endl;
                         }
+                        if(g->createDotFileKosaraju(ans)){
+                            string inName = DOTFILE_PATH_KOSARAJU + name;
+                            string outName = VIEWPNGFILE_PATH_KOSARAJU + name;
+                            getGraphView(inName, outName);
+                        }
                     }
                 } else cout << "[ERRO] Vertice de origem invalido.\n";
                 pauseMenu();
                 break;
                 
-            case 6: 
+            case 5: 
                 cout << "Digite o vertice de origem para o algoritmo de Dijkstra: ";
                 cin >> origin;
                 if(origin >= 0 && origin < g->getNodeCount()) {
@@ -116,16 +115,34 @@ void menuAlgorithms(Graph* g) {
                 pauseMenu();
                 break;
                 
-            case 7:
-                cout << "nao imp.\n";
+            case 6:
+                cout << "Digite o vertice de origem para o algoritmo de Kruskal: ";
+                cin >> origin;
+                if(origin >= 0 && origin < g->getNodeCount()) {
+                    pair<int, TreeEdges> kruskalRes = g->kruskal(origin);
+                    TreeEdges treeEdges = kruskalRes.second;
+                    
+                    cout << "peso total: " << kruskalRes.first << endl;
+                    cout << "arestas: ";
+                    for(int i=0;i<treeEdges.size();i++){
+                        for(int n : treeEdges[i]){
+                            cout << "(" << i << ", " << n << ") ";
+                        }
+                    }
+                    if(g->createDotFileKruskal(treeEdges)){     
+                        string inName = DOTFILE_PATH_KRUSKAL + name;
+                        string outName = VIEWPNGFILE_PATH_KRUSKAL + name;
+                        getGraphView(inName, outName);
+                    }
+                } else cout << "[ERRO] Vertice de origem invalido.\n";
                 pauseMenu();
                 break;
                 
-            case 8:
+            case 7:
                 cout << "Voltando ao menu de carregamento...\n";
                 return;
                 
-            case 9:
+            case 8:
                 cout << "Encerrando o software...\n";
                 exit(0);
                 
@@ -156,25 +173,29 @@ void runMenu() {
         }
 
         if (opt == 1) {
-            string path;
-            cout << "Digite o nome do arquivo do grafo (precisa estar em \input): ";
-            cin >> path;
+            string filename;
+            cout << "Digite o nome do arquivo do grafo (precisa estar em \\input): ";
+            cin >> filename;
             
-            Graph* g = readGraph("..\\input\\" + path);
+            Graph* g = readGraph("..\\input\\" + filename);
             if (g) {
                 cout << "\nGrafo carregado com sucesso!\n";
-                g->showLog(); 
+                string inName = DOTFILE_PATH + filename;
+                string outName = VIEWPNGFILE_PATH + filename;
+                if(g->createDotFile()) getGraphView(inName, outName);
                 pauseMenu();
-                menuAlgorithms(g);
+                menuAlgorithms(g, filename);
                 delete g;
             } else {
-                cout << "[ERRO] Falha ao carregar o grafo. Verifique o caminho e a formatacao do arquivo.\n";
+                cout << "[ERRO] Falha ao carregar o grafo. Verifique logs.\n";
                 pauseMenu();
             }
-        } else if (opt == 2) {
-            cout << "Encerrando o software...\n"; break;
+        } else if (opt == 2){ 
+            cout << "Encerrando o software...j\n"; 
+            break;
         } else {
-            cout << "[ERRO] Opcao invalida.\n"; pauseMenu();
+            cout << "[ERRO] Opcao invalida.\n"; 
+            pauseMenu();
         }
     }
 }

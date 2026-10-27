@@ -14,11 +14,18 @@
 #define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
+
 #define LOGFILE_PATH "..\\logs\\logs.txt"
 
 #define GRAPHVIZ_PATH "\"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe\""
-#define DOTFILE_PATH "..\\graph-view\\graphView.dot"
-#define VIEWPNGFILE_PATH "..\\graph-view\\graphView.png"
+
+#define DOTFILE_PATH "..\\graph-view\\graphView"
+#define DOTFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
+#define DOTFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
+
+#define VIEWPNGFILE_PATH "..\\graph-view\\graphView"
+#define VIEWPNGFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
+#define VIEWPNGFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
 
 #define INT_INF numeric_limits<int>::max()
 
