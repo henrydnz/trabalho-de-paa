@@ -2,3 +2,6 @@
 *.exe
 *.svg
 *.png
+graph-view/
+input/
+logs/

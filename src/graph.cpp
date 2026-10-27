@@ -67,12 +67,12 @@ Graph* readGraph(string filename){
     return new Graph(oriented, nodeCount, edgeTable);
 }
 
-bool Graph::createDotFile(){
-    ofstream dot(DOTFILE_PATH);
+bool Graph::createDotFile(string filename){
+    string path = DOT_PATH + filename + ".dot";
+    ofstream dot(path);
+
     if(!dot.is_open()){
-        stringstream ss;
-        ss << "Arquivo " << DOTFILE_PATH << " nao conseguiu ser aberto para a visualizacao do grafo.\n";
-        logsUtil.log(ss.str(), 1);
+        logsUtil.log(path + " nao pode ser criado", 1);
         return false;
     }
 
@@ -94,13 +94,17 @@ bool Graph::createDotFile(){
     return true;
 }
 
-bool Graph::createDotFileKosaraju(Components& components){
-    ofstream dot(DOTFILE_PATH_KOSARAJU);
+static bool isIn(const vector<int>& v, int n){
+    return find(v.begin(),v.end(),n) != v.end();
+}
+
+bool Graph::createDotFileKosaraju(string filename, Components& components){
+    string path = DOT_PATH + filename + "_kosaraju.dot";
+
+    ofstream dot(path);
+
     if(!dot.is_open()){
-        stringstream ss;
-        ss << "Arquivo " << DOTFILE_PATH_KOSARAJU << "nao conseguiu ser aberto para a visualizacao do grafo kosaraju.\n";
-        cout << ss.str() << endl;
-        logsUtil.log(ss.str(), 1);
+        logsUtil.log(path + " nao pode ser criado", 1);
         return false;
     }
 
@@ -121,10 +125,7 @@ bool Graph::createDotFileKosaraju(Components& components){
                 dot << i << edge << e.dest << " [label=\"" << e.weight << "\"";
                 for(int j=0; j<components.size(); j++){
                     vector<int> component = components[j];
-
-                    if(find(component.begin(),component.end(),i) != component.end() &&
-                        find(component.begin(),component.end(),e.dest) != component.end()
-                    ){
+                    if(isIn(component, i) && isIn(component, e.dest)){
                         string color = colors[j%colors.size()];
                         dot << ", color=" << color << ", fontcolor=" << color;
                     }
@@ -138,13 +139,13 @@ bool Graph::createDotFileKosaraju(Components& components){
     return true;
 }
 
-bool Graph::createDotFileKruskal(TreeEdges& treeEdges){
-    ofstream dot(DOTFILE_PATH_KRUSKAL);
+bool Graph::createDotFileKruskal(string filename, TreeEdges& treeEdges){
+    string path = DOT_PATH + filename + "_kruskal.dot";
+
+    ofstream dot(path);
+
     if(!dot.is_open()){
-        stringstream ss;
-        ss << "Arquivo " << DOTFILE_PATH_KRUSKAL << "nao conseguiu ser aberto para a visualizacao do grafo kosaraju.\n";
-        cout << ss.str() << endl;
-        logsUtil.log(ss.str(), 1);
+        logsUtil.log(path + " nao pode ser criado", 1);
         return false;
     }
 

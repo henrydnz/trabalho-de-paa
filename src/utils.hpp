@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cctype>
 #include <limits>
+#include <filesystem>
 
 #include "graph.hpp"
 
@@ -15,17 +16,15 @@
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 
-#define LOGFILE_PATH "..\\logs\\logs.txt"
 
 #define GRAPHVIZ_PATH "C:\\msys64\\ucrt64\\bin\\dot.exe"
 
-#define DOTFILE_PATH "..\\graph-view\\graphView"
-#define DOTFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
-#define DOTFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
+#define LOGFILE_PATH "..\\logs\\logs.txt"
 
-#define VIEWPNGFILE_PATH "..\\graph-view\\graphView"
-#define VIEWPNGFILE_PATH_KOSARAJU "..\\graph-view\\graphView_kosaraju"
-#define VIEWPNGFILE_PATH_KRUSKAL "..\\graph-view\\graphView_kruskal"
+#define INPUT_PATH "..\\input\\"
+#define LOGS_PATH "..\\logs\\"
+#define DOT_PATH "..\\graph-view\\dot-files\\"
+#define IMAGE_VIEW_PATH "..\\graph-view\\image-files\\"
 
 #define INT_INF numeric_limits<int>::max()
 
@@ -35,12 +34,8 @@ using namespace std;
 /// @param s string a ser verificada
 /// @return true se a string possui apenas digitos e false do contrario
 bool isPosInteger(string s);
-
-/// @brief Automaticamente executa o dot do Graphviz
-/// @param dotFilePath Caminho para o arquivo .dot
-/// @param viewFilePath Destino para o PNG gerado
-/// @return true se executar com sucesso e false do contrario
-bool getGraphView(string dotFilePath, string viewFilePath);
+bool getGraphView(string filename);
+void createFolders();
 
 /// @brief Classe auxiliar Singleton para log
 class LogsUtil {

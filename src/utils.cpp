@@ -10,22 +10,46 @@ bool isPosInteger(string s){
     return true;
 }
 
-bool getGraphView(string dotFilePath, string viewFilePath){
+static void newFolder(string path){
+    try { filesystem::create_directories(path); }
+    catch (const filesystem::filesystem_error& e) {
+        cerr << "Nao foi possivel criar a pasta " << path << " - Erro: " << e.what() << endl;
+    }
+}
+
+void createFolders(){
+    newFolder(INPUT_PATH);
+    newFolder(LOGS_PATH);
+    newFolder(DOT_PATH);
+    newFolder(IMAGE_VIEW_PATH);
+}
+
+bool getGraphView(string filename){
+    logsUtil.log("gerando visualizacao de " + filename + ".dot");
+
+    string input = DOT_PATH + filename + ".dot";
+    string output = IMAGE_VIEW_PATH + filename + ".png";
+
     stringstream cmd;
-    cmd << GRAPHVIZ_PATH << " -Tpng " << dotFilePath<< " -o " << viewFilePath;
+    cmd << GRAPHVIZ_PATH << " -Tpng " << input << " -o " << output;
+
+    logsUtil.log("Executou system(" + cmd.str() + ");");
 
     int result = system(cmd.str().c_str());
 
+    stringstream msg;
+
     if (result != 0) {
-        string err = "Erro ao gerar a visualizacao do grafo.";
-        cerr << err << endl;
-        logsUtil.log(err,1);
+        msg << "Erro ao gerar a visualizacao (\'" << output << "\')";
+        cerr << msg.str() << endl;
+        logsUtil.log(msg.str(),1);
+
         return false;
     }
 
-    string msg = "Visualizacao do grafo gerada em " + viewFilePath;
-    cout << msg << endl;
-    logsUtil.log(msg);
+    msg << "Visualizacao gerada: " << output;
+    cout << msg.str() << endl;
+    logsUtil.log(msg.str());
 
     return true;
 }
