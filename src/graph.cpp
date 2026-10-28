@@ -67,8 +67,77 @@ Graph* readGraph(string filename){
     return new Graph(oriented, nodeCount, edgeTable);
 }
 
-bool Graph::createDotFile(string filename){
+// ===== helpers
+
+// general
+static void logNodePath(const vector<int>& path){
+    stringstream ss;
+    for (size_t i = 0; i < path.size(); i++) ss << path[i] << (i + 1 == path.size() ? "" : "-");
+    logsUtil.log(ss.str());
+}
+
+// kosaraju
+static bool isIn(const vector<int>& v, int n){
+    return find(v.begin(),v.end(),n) != v.end();
+}
+EdgeTable Graph::transpose() {
+    EdgeTable transposed(nodeCount);
+
+    for (int u = 0; u < nodeCount; u++) {
+        for (Edge e : edges[u]) {
+            transposed[e.dest].push_back(Edge(u, e.weight));
+        }
+    }
+
+    return transposed;
+}
+
+// dijkstra
+static bool hasNegativeWeights(int nodeCount, const EdgeTable& edges){
+    logsUtil.log("procurando por pesos negativos...");
+    for(int i=0;i<nodeCount;i++) for(Edge e : edges[i]) if(e.weight < 0) return true;
+    logsUtil.log("grafo nao possui pesos negativos.");
+    return false;
+}
+static void showDijkstraTable(const vector<int>& res){
+    vector<int> a(res.size());
+    for(int i=0;i<res.size();i++) a[i]=i;
+    logsUtil.log("nodes \\n dist:");
+    logNodePath(a);
+    logNodePath(res);
+}
+
+// kruskal
+static vector<pair<int, Edge>> sortEdgesByWeight(const EdgeTable& edges){
+    logsUtil.log("ordenando vertices por peso");
+
+    vector<pair<int, Edge>> sorted;
+
+    for(int i = 0; i < edges.size(); i++){
+        for(Edge e : edges[i]){ sorted.push_back({i, e}); }
+    }
+
+    sort(sorted.begin(),sorted.end(),[](const pair<int, Edge>& a, const pair<int, Edge>& b){return a.second.weight < b.second.weight;});
+
+    return sorted;
+}
+static int _find(vector<int>& parent, int v){
+    if(parent[v]!=v) parent[v]=_find(parent,parent[v]);
+    return parent[v];
+}
+static void _union(vector<int>& parent, int u, int v){
+    int rootu = _find(parent, u);
+    int rootv = _find(parent, v);
+    if(rootu != rootv) parent[rootu] = rootv;
+}
+
+// ===== dot files
+
+bool Graph::createDotFile(const string& filename){
+    logsUtil.log("gerando " + filename + ".dot");
+    
     string path = DOT_PATH + filename + ".dot";
+
     ofstream dot(path);
 
     if(!dot.is_open()){
@@ -91,14 +160,13 @@ bool Graph::createDotFile(string filename){
     }
     dot << "}";
 
+    logsUtil.log("Arquivo criado: " + path);
+
     return true;
 }
-
-static bool isIn(const vector<int>& v, int n){
-    return find(v.begin(),v.end(),n) != v.end();
-}
-
-bool Graph::createDotFileKosaraju(string filename, Components& components){
+bool Graph::createDotFileKosaraju(const string& filename, const Components& components){
+    logsUtil.log("gerando " + filename + "_kosaraju.dot");
+    
     string path = DOT_PATH + filename + "_kosaraju.dot";
 
     ofstream dot(path);
@@ -136,10 +204,13 @@ bool Graph::createDotFileKosaraju(string filename, Components& components){
     }
     dot << "}";
 
+    logsUtil.log("Arquivo criado: " + path);
+
     return true;
 }
+bool Graph::createDotFileKruskal(const string& filename, const TreeEdges& treeEdges){
+    logsUtil.log("gerando " + filename + "_kruskal.dot");
 
-bool Graph::createDotFileKruskal(string filename, TreeEdges& treeEdges){
     string path = DOT_PATH + filename + "_kruskal.dot";
 
     ofstream dot(path);
@@ -170,10 +241,16 @@ bool Graph::createDotFileKruskal(string filename, TreeEdges& treeEdges){
         }
     }
     dot << "}";
+    
+    logsUtil.log("Arquivo criado: " + path);
 
     return true;
 }
 
+
+// ===== search algorithms
+
+// distribute component search
 vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,vector<int>&), bool reverseAns){
     vector<int> traverse; vector<bool> visited (nodeCount, false);
     // apply method on origin node
@@ -183,8 +260,9 @@ vector<int> Graph::search(int origin, void (Graph::*method)(int,vector<bool>&,ve
     
     if(reverseAns) reverse(traverse.begin(), traverse.end());
     return traverse;
-};
+}
 
+// component search
 void Graph::bfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
     queue<int> q; q.push(node);
@@ -200,7 +278,6 @@ void Graph::bfsComponent(int node, vector<bool>& visited, vector<int>& traverse)
         }
     }
 }
-
 void Graph::dfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
     traverse.push_back(node);
@@ -209,7 +286,6 @@ void Graph::dfsComponent(int node, vector<bool>& visited, vector<int>& traverse)
         if(!visited[v]) dfsComponent(v, visited, traverse);
     }
 }
-
 void Graph::topologicDfsComponent(int node, vector<bool>& visited, vector<int>& traverse){
     visited[node] = true;
     for(Edge e : edges[node]){
@@ -219,12 +295,19 @@ void Graph::topologicDfsComponent(int node, vector<bool>& visited, vector<int>& 
     traverse.push_back(node);
 }
 
-static void logNodePath(vector<int>& path){
-    stringstream ss;
-    for (size_t i = 0; i < path.size(); i++) ss << path[i] << (i + 1 == path.size() ? "" : "-");
-    logsUtil.log(ss.str());
+// general search
+void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component) {
+    visited[node] = true;
+    component.push_back(node);
+
+    for (Edge e : transposed[node]) {
+        if (!visited[e.dest]) {
+            kosarajuDfs(e.dest, transposed, visited, component);
+        }
+    }
 }
 
+// ===== public algorithms
 vector<int> Graph::bfs(int origin){
     logsUtil.log("aplicando busca bfs... origem:"+to_string(origin));
     vector<int> path = search(origin, &Graph::bfsComponent, false);
@@ -243,9 +326,8 @@ vector<int> Graph::topologicOrder(int origin){
     logNodePath(path);
     return path;
 }
-
-Components Graph::kosaraju(int origin) {
-    logsUtil.log("aplicando kosaraju... origem:"+to_string(origin));
+Components Graph::kosaraju() {
+    logsUtil.log("aplicando kosaraju...");
 
     if(!isOriented){
         string err = "Grafo nao orientado nao pode ser analisado por kosaraju";
@@ -254,7 +336,7 @@ Components Graph::kosaraju(int origin) {
         return {};
     }
 
-    vector<int> firstPass = topologicOrder(origin);
+    vector<int> firstPass = topologicOrder(0);
 
     EdgeTable transposed = transpose();
 
@@ -273,45 +355,6 @@ Components Graph::kosaraju(int origin) {
 
     return ans;
 }
-
-EdgeTable Graph::transpose() {
-    EdgeTable transposed(nodeCount);
-
-    for (int u = 0; u < nodeCount; u++) {
-        for (Edge e : edges[u]) {
-            transposed[e.dest].push_back(Edge(u, e.weight));
-        }
-    }
-
-    return transposed;
-}
-
-void Graph::kosarajuDfs(int node, const EdgeTable& transposed, vector<bool>& visited, vector<int>& component) {
-    visited[node] = true;
-    component.push_back(node);
-
-    for (Edge e : transposed[node]) {
-        if (!visited[e.dest]) {
-            kosarajuDfs(e.dest, transposed, visited, component);
-        }
-    }
-}
-
-static bool hasNegativeWeights(int nodeCount, const EdgeTable& edges){
-    logsUtil.log("procurando por pesos negativos...");
-    for(int i=0;i<nodeCount;i++) for(Edge e : edges[i]) if(e.weight < 0) return true;
-    logsUtil.log("grafo nao possui pesos negativos.");
-    return false;
-}
-
-static void showDijkstraTable(vector<int>& res){
-    vector<int> a(res.size());
-    for(int i=0;i<res.size();i++) a[i]=i;
-    logsUtil.log("nodes \\n dist:");
-    logNodePath(a);
-    logNodePath(res);
-}
-
 vector<int> Graph::dijkstra(int origin){
     logsUtil.log("aplicando dijkstra... origem:"+to_string(origin));
     if(hasNegativeWeights(nodeCount, edges)){
@@ -351,32 +394,6 @@ vector<int> Graph::dijkstra(int origin){
 
     return dist;
 }
-
-vector<pair<int, Edge>> sortEdgesByWeight(EdgeTable& edges){
-    logsUtil.log("ordenando vertices por peso");
-
-    vector<pair<int, Edge>> sorted;
-
-    for(int i = 0; i < edges.size(); i++){
-        for(Edge e : edges[i]){ sorted.push_back({i, e}); }
-    }
-
-    sort(sorted.begin(),sorted.end(),[](const pair<int, Edge>& a, const pair<int, Edge>& b){return a.second.weight < b.second.weight;});
-
-    return sorted;
-}
-
-static int _find(vector<int>& parent, int v){
-    if(parent[v]!=v) parent[v]=_find(parent,parent[v]);
-    return parent[v];
-}
-
-static void _union(vector<int>& parent, int u, int v){
-    int rootu = _find(parent, u);
-    int rootv = _find(parent, v);
-    if(rootu != rootv) parent[rootu] = rootv;
-}
-
 pair<int, TreeEdges> Graph::kruskal(){
     vector<int> parent(nodeCount);
     for(int i=0;i<nodeCount;i++) parent[i]=i;
@@ -394,7 +411,9 @@ pair<int, TreeEdges> Graph::kruskal(){
 
         if(_find(parent, u) != _find(parent, v)){
             _union(parent, u, v);
+
             treeEdges[u].push_back(v);
+
             totalWeight += w;
             count++;
         }

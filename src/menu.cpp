@@ -43,6 +43,9 @@ void menuAlgorithms(Graph* g, string filename) {
         vector<int> res;
         Components ans;
 
+        pair<int, TreeEdges> kruskalRes;
+        TreeEdges treeEdges;
+
         switch(option) {
             case 1:
                 cout << "Digite o vertice de origem para DFS: ";
@@ -78,22 +81,18 @@ void menuAlgorithms(Graph* g, string filename) {
                 break;
                 
             case 4: 
-                cout << "Digite o vertice de origem para Componentes Fortemente Conexas (Kosaraju): ";
-                cin >> origin;
-                if(origin >= 0 && origin < g->getNodeCount()) {
-                    ans = g->kosaraju(origin);
-                    if (!ans.empty()) {
-                        for (size_t i = 0; i < ans.size(); i++) {
-                            cout << "Componente " << i + 1 << ": ";
-                            for (size_t j = 0; j < ans[i].size(); j++) {
-                                cout << ans[i][j] << (j + 1 == ans[i].size() ? "" : ", ");
-                            }
-                            cout << endl;
+                ans = g->kosaraju();
+                if (!ans.empty()) {
+                    for (size_t i = 0; i < ans.size(); i++) {
+                        cout << "Componente " << i + 1 << ": ";
+                        for (size_t j = 0; j < ans[i].size(); j++) {
+                            cout << ans[i][j] << (j + 1 == ans[i].size() ? "" : ", ");
                         }
-                        if(g->createDotFileKosaraju(filename, ans)) getGraphView(filename + "_kosaraju");
-                        else cout << "Erro na criacao da visualizacao. checar logs.";
+                        cout << endl;
                     }
-                } else cout << "Vertice de origem invalido.\n";
+                    if(g->createDotFileKosaraju(filename, ans)) getGraphView(filename + "_kosaraju");
+                    else cout << "Erro na criacao da visualizacao. checar logs.";
+                }
                 pauseMenu();
                 break;
                 
@@ -113,18 +112,17 @@ void menuAlgorithms(Graph* g, string filename) {
                 break;
                 
             case 6:
-                cout << "Digite o vertice de origem para Kruskal: ";
-                cin >> origin;
-                if(origin >= 0 && origin < g->getNodeCount()) {
-                    pair<int, TreeEdges> kruskalRes = g->kruskal();
-                    TreeEdges treeEdges = kruskalRes.second;
-                    
-                    cout << "peso total: " << kruskalRes.first << endl;
-                    cout << "arestas: ";
-                    for(int i=0;i<treeEdges.size();i++) for(int n : treeEdges[i]) cout << "(" << i << ", " << n << ") "; cout << endl;
-                    if(g->createDotFileKruskal(filename, treeEdges)) getGraphView(filename + "_kruskal");
-                    else cout << "Erro na criacao da visualizacao. checar logs.";
-                } else cout << "Vertice de origem invalido.\n";
+                kruskalRes = g->kruskal();
+                treeEdges = kruskalRes.second;
+
+                cout << "peso total: " << kruskalRes.first << endl;
+                cout << "arestas: ";
+                
+                for(int i=0;i<treeEdges.size();i++) for(int n : treeEdges[i]) cout << "(" << i << ", " << n << ") "; cout << endl;
+
+                if(g->createDotFileKruskal(filename, treeEdges)) getGraphView(filename + "_kruskal");
+                else cout << "Erro na criacao da visualizacao. checar logs.";
+
                 pauseMenu();
                 break;
                 

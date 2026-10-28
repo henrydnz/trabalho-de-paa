@@ -12,20 +12,24 @@
 
 #include "graph.hpp"
 
+// macros de regex string para leitura do grafo.
 #define REGEX_INPUT_FILE_FIRST_LINE R"(^orientado=(sim|nao)$)"
 #define REGEX_INPUT_FILE_SECOND_LINE R"(^V=([0-9]+)$)"
 #define REGEX_INPUT_FILE_EDGES R"(^\(([0-9]+),([0-9]+)\):(-?[0-9]+)$)"
 
-
+// caminho para o executavel dot do graphviz (mudar se necessario)
 #define GRAPHVIZ_PATH "\"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe\""
 
+// caminho para arquivo de logs
 #define LOGFILE_PATH "..\\logs\\logs.txt"
 
+// caminhos para as pastas necessarias para o programa funcionar
 #define INPUT_PATH "..\\input\\"
 #define LOGS_PATH "..\\logs\\"
 #define DOT_PATH "..\\graph-view\\dot-files\\"
 #define IMAGE_VIEW_PATH "..\\graph-view\\image-files\\"
 
+// valor int infinito (usado em Dijkstra), valor maximo de int.
 #define INT_INF numeric_limits<int>::max()
 
 using namespace std;
@@ -67,6 +71,7 @@ public:
     void resetLog();
 };
 
+/// @brief variavel da singleton
 inline LogsUtil& logsUtil = LogsUtil::getInstance();
 
 /// @brief Imprime no log um erro na leitura de uma linha

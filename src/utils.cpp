@@ -33,7 +33,7 @@ bool getGraphView(string filename){
     stringstream cmd;
     cmd << GRAPHVIZ_PATH << " -Tpng " << input << " -o " << output;
 
-    logsUtil.log("Executou system(" + cmd.str() + ");");
+    //logsUtil.log("Executou system(" + cmd.str() + ");");
 
     int result = system(cmd.str().c_str());
 
